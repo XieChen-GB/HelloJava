@@ -11,10 +11,9 @@ public class App {
         System.out.println("年龄: " + age);
         System.out.println("==========================");
 
-
         // -----3. 判断是否成年
         if (age >= 18) {
-            System.out.println (name + "是成年人");
+            System.out.println(name + "是成年人");
         } else if (age >= 13) {
             System.out.println(name + "是青少年");
         } else {
@@ -23,16 +22,16 @@ public class App {
         
         // -----4. 判断是否可以开车
         if (age >= 18 && hasLicense) {
-            System.out.println ("可以开车");
+            System.out.println("可以开车");
         } else {
             System.out.println("不能开车");
         }
 
         // -----5. 用 for 循环倒计时
-        System.out.println  ("-------倒计时-------");
-        for (int i= 5; i >=1; i--){
+        System.out.println("-------倒计时-------");
+        for (int i = 5; i >= 1; i--) {
             System.out.println(i + "...");
         }
         System.out.println("出发!");
-        }
-     }
+    }
+}
