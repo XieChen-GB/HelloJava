@@ -1,38 +1,43 @@
+// 定义一个“人”的类
+class Person {
+    // 定义变量（属性） --描述这个人有什么
+    String name;  // 姓名
+    int age ;     // 年龄
+    String job;   // 职业
+
+    // 成员方法（行为） -- 描述一个人能做什么
+    void sayHello() {
+        System.out.println("你好！我叫" + name + " 今年" + age + "岁，职业是" + job);
+    }
+
+    void birthday() {
+        age++;  // 年龄加1
+        System.out.println("过生日了！现在我" + age + "岁了！");
+    }
+}
+
+// 主程序
 public class App {
-    public static void main(String[] args){
-        // -----1. 声明变量
-        String name = "谢晨";
-        int age = 25;
-        boolean hasLicense = false;
+    public static void main(String[] args) {
 
-        // -----2. 输出基本信息
-        System.out.println("==========================");
-        System.out.println("姓名: " + name);
-        System.out.println("年龄: " + age);
-        System.out.println("==========================");
+        // 创建第一个对象
+        Person p1 = new Person();
+        p1.name = "谢晨";
+        p1.age = 57;
+        p1.job = "IT工程师";
+        p1.sayHello();
 
-        // -----3. 判断是否成年
-        if (age >= 18) {
-            System.out.println(name + "是成年人");
-        } else if (age >= 13) {
-            System.out.println(name + "是青少年");
-        } else {
-            System.out.println(name + "是儿童");
-        }
-        
-        // -----4. 判断是否可以开车
-        if (age >= 18 && hasLicense) {
-            System.out.println("可以开车");
-        } else {
-            System.out.println("不能开车");
-        }
+        // 创建第二个对象
+        Person p2 = new Person();
+        p2.name = "田中";
+        p2.age = 30;
+        p2.job = "Java开发者";
+        p2.sayHello();
 
-        // -----5. 用 for 循环倒计时
-        System.out.println("-------倒计时-------");
-        for (int i = 5; i >= 1; i--) {
-            System.out.println(i + "...");
-        }
-        System.out.println("出发!");
-        System.out.println("这是4/19模拟在另一台电脑上做的修改");
+        // 让 p1 过生日
+        p1.birthday();
+
+        System.out.println("p1现在的年龄：" + p1.age);
+        System.out.println("p2现在的年龄：" + p2.age);
     }
 }
