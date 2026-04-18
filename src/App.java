@@ -1,19 +1,25 @@
 public class App {
-    public static void main(String[] args) throws Exception {
-        // 整数
-        int age =35;
-        // 小数
-        double height = 1.75;
-        // 布尔值
-        boolean isStudent = true;
-        // 字符
-        char firstChar = 'M';
-        // 字符串
-        String name = "田中";
+    public static void main(String[] args){
+        // -- if 判断
+        int score = 85;
+        if(score >= 90){
+            System.out.println("优秀");
+        } else if  (score > 60){
+            System.out.println("及格");
+        } else {
+            System.out.println("不及格");
+        }
+        // for 循环
+        for (int i=1;i <= 5; i++){
+            System.out.println("第" + i + "次循环");
+        }
         
-        System.out.println("姓名: " + name);
-        System.out.println("年龄: " + age);
-        System.out.println("身高: " + height);
-        System.out.println("是否为学生: " + isStudent);
+        // while 循环
+        int count = 0;
+        while (count < 3){
+            System.out.println("count = " + count);
+            count++;
+        }
+
     }
 }
