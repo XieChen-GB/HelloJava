@@ -33,6 +33,6 @@ public class App {
             System.out.println(i + "...");
         }
         System.out.println("出发!");
-        System.out.println("这是模拟在另一台电脑上做的修改");
+        System.out.println("这是4/19模拟在另一台电脑上做的修改");
     }
 }
