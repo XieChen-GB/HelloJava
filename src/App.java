@@ -5,14 +5,30 @@ class Person {
     int age ;     // 年龄
     String job;   // 职业
 
-    // 成员方法（行为） -- 描述一个人能做什么
+    // 方法1：自我介绍
     void sayHello() {
         System.out.println("你好！我叫" + name + " 今年" + age + "岁，职业是" + job);
     }
 
+    // 方法2：过生日，年龄加1
     void birthday() {
         age++;  // 年龄加1
         System.out.println("过生日了！现在我" + age + "岁了！");
+    }
+
+    // 方法3：判断是否退休（日本退休年龄65岁）
+    void chekRetirement(){
+        if (age >= 65) {
+            System.out.println(name + "已经退休了！");
+        } else {
+            int yeares = 65-age;
+            System.out.println(name + "还有" + yeares + "年退休。");
+        }
+    }
+
+    // 方法4：工作
+    void work() {
+        System.out.println(name + "正在努力工作");
     }
 }
 
@@ -39,5 +55,10 @@ public class App {
 
         System.out.println("p1现在的年龄：" + p1.age);
         System.out.println("p2现在的年龄：" + p2.age);
+
+        p1.chekRetirement();
+        p1.work();
+        p2.chekRetirement();
+        p2.work();
     }
 }
