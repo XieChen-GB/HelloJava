@@ -1,64 +1,48 @@
-// 定义一个“人”的类
 class Person {
-    // 定义变量（属性） --描述这个人有什么
-    String name;  // 姓名
-    int age ;     // 年龄
-    String job;   // 职业
+    // 成员变量改为 private，外部不能直接访问
+    private String name;
+    private  int age;
+    private String job;
 
-    // 方法1：自我介绍
-    void sayHello() {
-        System.out.println("你好！我叫" + name + " 今年" + age + "岁，职业是" + job);
+    // 构造方法
+    Person (String name, int age, String job){
+        this.name = name;
+        this.age = age;
+        this.job = job;
+
     }
 
-    // 方法2：过生日，年龄加1
-    void birthday() {
-        age++;  // 年龄加1
-        System.out.println("过生日了！现在我" + age + "岁了！");
+    // 提供公共的 getter 和 setter 方法来访问和修改成员变量
+    public String getName() {
+        return name;
+    }
+    public int getAge() {
+        return age;
     }
 
-    // 方法3：判断是否退休（日本退休年龄65岁）
-    void chekRetirement(){
-        if (age >= 65) {
-            System.out.println(name + "已经退休了！");
+    public void setAge (int age) {
+        if (age < 0 || age > 150) {
+            System.out.println("年龄不合法");
         } else {
-            int yeares = 65-age;
-            System.out.println(name + "还有" + yeares + "年退休。");
+            this.age = age;
         }
     }
 
-    // 方法4：工作
-    void work() {
-        System.out.println(name + "正在努力工作");
+    public void sayHello() {
+        System.out.println("你好！我叫" + name + ", 今年" + age + "岁，我的工作是 " + job);
     }
 }
 
-// 主程序
 public class App {
     public static void main(String[] args) {
+        Person P1 = new Person("谢晨", 57, "IT工程师");
 
-        // 创建第一个对象
-        Person p1 = new Person();
-        p1.name = "谢晨";
-        p1.age = 57;
-        p1.job = "IT工程师";
-        p1.sayHello();
+        // 用 setter 修改年龄
+        P1.setAge(58);
+        System.out.println("修改后的年龄: " + P1.getAge());
 
-        // 创建第二个对象
-        Person p2 = new Person();
-        p2.name = "田中";
-        p2.age = 30;
-        p2.job = "Java开发者";
-        p2.sayHello();
-
-        // 让 p1 过生日
-        p1.birthday();
-
-        System.out.println("p1现在的年龄：" + p1.age);
-        System.out.println("p2现在的年龄：" + p2.age);
-
-        p1.chekRetirement();
-        p1.work();
-        p2.chekRetirement();
-        p2.work();
+        // 尝试设置不合法的年龄
+        P1.setAge(-10);
+        System.out.println("年龄仍然是: " + P1.getAge());
     }
 }
