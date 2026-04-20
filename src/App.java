@@ -1,48 +1,60 @@
-class Person {
-    // 成员变量改为 private，外部不能直接访问
+class Person{
     private String name;
-    private  int age;
+    private int age;
     private String job;
 
-    // 构造方法
-    Person (String name, int age, String job){
+    // 构造方法重载
+    public Person (String name, int age, String job) {
         this.name = name;
         this.age = age;
         this.job = job;
-
     }
 
-    // 提供公共的 getter 和 setter 方法来访问和修改成员变量
-    public String getName() {
-        return name;
+    public Person (String name, int age) {
+        this.name = name;
+        this.age = age;
+        this.job = "未知";
     }
-    public int getAge() {
-        return age;
+
+    public Person (String name) {
+        this.name = name;
+        this.age = 0;
+        this.job = "未知";
+    }
+
+    // 普通方法重载
+    public void printInfo() {
+        System.out.println(name + " / " + age + "岁 / " + job);
+    }
+    
+    public void printInfo ( String title) {
+        System.out.println("【" + title + "】" + name + " / " + age + "岁");    
     }
 
     public void setAge (int age) {
         if (age < 0 || age > 150) {
             System.out.println("年龄不合法");
+            return;
         } else {
             this.age = age;
-        }
+        }    
     }
 
-    public void sayHello() {
-        System.out.println("你好！我叫" + name + ", 今年" + age + "岁，我的工作是 " + job);
-    }
+    public int getAge() {
+        return age;
+    }   
 }
 
 public class App {
     public static void main(String[] args) {
-        Person P1 = new Person("谢晨", 57, "IT工程师");
+        Person p1 = new Person("谢晨",  57, "IT工程师");
+        Person p2 = new Person("田中", 30);
+        Person p3 = new Person("山田");
 
-        // 用 setter 修改年龄
-        P1.setAge(58);
-        System.out.println("修改后的年龄: " + P1.getAge());
+        p1.printInfo();
+        p1.printInfo("员工信息");
 
-        // 尝试设置不合法的年龄
-        P1.setAge(-10);
-        System.out.println("年龄仍然是: " + P1.getAge());
+        p2.printInfo();
+        p3.printInfo();
     }
 }
