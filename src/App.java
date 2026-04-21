@@ -1,60 +1,66 @@
-class Person{
+class Student {
     private String name;
     private int age;
-    private String job;
+    private int grade;
+    private double score;
 
-    // 构造方法重载
-    public Person (String name, int age, String job) {
+    // Constructor
+    public Student (String name,int age, int grade, double score) {
         this.name = name;
         this.age = age;
-        this.job = job;
+        this.grade = grade;
+        this.score = score;
     }
 
-    public Person (String name, int age) {
-        this.name = name;
-        this.age = age;
-        this.job = "未知";
-    }
-
-    public Person (String name) {
-        this.name = name;
-        this.age = 0;
-        this.job = "未知";
-    }
-
-    // 普通方法重载
+    // method to display student information
     public void printInfo() {
-        System.out.println(name + " / " + age + "岁 / " + job);
+        System.out.println("Name: " + name);
+        System.out.println("Age: " + age);
+        System.out.println("Grade: " + grade);
+        System.out.println("Score: " + score);
+    }
+
+    // method to check if the student passed
+    public void isPass() {
+        if (score >= 60) {
+            System.out.println("及格");
+        } else {
+            System.out.println("不及格");
+        }
+    }
+
+    // method to set Score
+    public void setScore(double score) {
+        if (score < 0 || score > 100) {
+            System.out.println("分数必须在0到100之间");
+        } else {
+            this.score = score;
+        }
     }
     
-    public void printInfo ( String title) {
-        System.out.println("【" + title + "】" + name + " / " + age + "岁");    
+    // method to get Score
+    public double getScore() {
+        return score;
     }
-
-    public void setAge (int age) {
-        if (age < 0 || age > 150) {
-            System.out.println("年龄不合法");
-            return;
-        } else {
-            this.age = age;
-        }    
-    }
-
-    public int getAge() {
-        return age;
-    }   
 }
 
 public class App {
     public static void main(String[] args) {
-        Person p1 = new Person("谢晨",  57, "IT工程师");
-        Person p2 = new Person("田中", 30);
-        Person p3 = new Person("山田");
+        // 创建两个学生对象
+        Student s1= new Student("谢晨",57,3,85.5);
+        Student s2= new Student("田中",20,1,55.0);
 
-        p1.printInfo();
-        p1.printInfo("员工信息");
+        // 打印信息
+        s1.printInfo();
+        s1.isPass();
+        System.out.println("-------------------");
+        s2.printInfo();
+        s2.isPass();
 
-        p2.printInfo();
-        p3.printInfo();
+        // 测试 setScore 验证
+        System.out.println("-------------------");
+        s2.setScore(120);    // 不合法
+        s2.setScore(75);     // 合法
+        System.out.println("修改后的成绩: " + s2.getScore());
     }
 }
