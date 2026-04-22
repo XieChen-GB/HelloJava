@@ -1,66 +1,79 @@
-class Student {
-    private String name;
-    private int age;
-    private int grade;
-    private double score;
+// 父类； 动物
+class Animal {
+    String name;
+    int age;
 
-    // Constructor
-    public Student (String name,int age, int grade, double score) {
+    public Animal (String name, int age) {
         this.name = name;
         this.age = age;
-        this.grade = grade;
-        this.score = score;
+    }
+    void eat() {
+        System.out.println(name + "正在吃东西");
     }
 
-    // method to display student information
-    public void printInfo() {
-        System.out.println("Name: " + name);
-        System.out.println("Age: " + age);
-        System.out.println("Grade: " + grade);
-        System.out.println("Score: " + score);
+    void sleep() {
+        System.out.println(name + "正在睡觉");
+    }   
+
+    void printInfo() {
+        System.out.println("名字：" + name + " 年龄：" + age);
+    }
+}
+
+// 子类： 狗---继承自 Animal
+class Dog extends Animal {
+    String breed; // 品种(Dog特有的属性)
+
+    public Dog(String name, int age, String breed){
+        super(name, age);
+        this.breed = breed;
     }
 
-    // method to check if the student passed
-    public void isPass() {
-        if (score >= 60) {
-            System.out.println("及格");
-        } else {
-            System.out.println("不及格");
-        }
+    void bark() {
+        System.out.println(name + "在叫:汪汪!");
     }
 
-    // method to set Score
-    public void setScore(double score) {
-        if (score < 0 || score > 100) {
-            System.out.println("分数必须在0到100之间");
-        } else {
-            this.score = score;
-        }
+    // 重写父类eat的方法
+    @Override
+    void eat() {
+        System.out.println(name + "正啃骨头");
     }
+}
+
+// 子类： 猫---继承自 Animal
+class Cat extends Animal {
+    boolean isIndoor; // 是否是室内猫(Cat特有的属性)
     
-    // method to get Score
-    public double getScore() {
-        return score;
+    public Cat (String name, int age, boolean isIndoor) {
+        super(name, age);
+        this.isIndoor = isIndoor;
+    }
+
+    void meow() {   // Cat特有的方法
+        System.out.println(name + "在叫:喵喵!");
+    }
+    // 重写父类eat的方法
+    @Override
+    void eat() {
+        System.out.println(name + "正在吃鱼");
     }
 }
 
 public class App {
     public static void main(String[] args) {
-        // 创建两个学生对象
-        Student s1= new Student("谢晨",57,3,85.5);
-        Student s2= new Student("田中",20,1,55.0);
+        Dog dog = new Dog("小黑", 3 , "拉布拉多");
+        Cat cat = new Cat("小白", 2, true);
 
-        // 打印信息
-        s1.printInfo();
-        s1.isPass();
-        System.out.println("-------------------");
-        s2.printInfo();
-        s2.isPass();
+        // 使用继承自 Animal 的方法
+        dog.printInfo();
+        dog.eat();
+        // 使用 Dog 类特有的方法
+        dog.bark();
 
-        // 测试 setScore 验证
-        System.out.println("-------------------");
-        s2.setScore(120);    // 不合法
-        s2.setScore(75);     // 合法
-        System.out.println("修改后的成绩: " + s2.getScore());
+        System.out.println("--------------------");
+        cat.printInfo();
+        cat.eat();
+        // 使用 Cat 类特有的方法
+        cat.meow();    
     }
 }
