@@ -61,19 +61,24 @@ class Cat extends Animal {
 
 public class App {
     public static void main(String[] args) {
-        Dog dog = new Dog("小黑", 3 , "拉布拉多");
-        Cat cat = new Cat("小白", 2, true);
+        // 多态写法：用父类类型的变量指向子类对象
+        Animal animal1 = new Dog("小黑",3,"拉布拉多");
+        Animal animal2 = new Cat("小白",2,true);
 
-        // 使用继承自 Animal 的方法
-        dog.printInfo();
-        dog.eat();
-        // 使用 Dog 类特有的方法
-        dog.bark();
+        // 调用 eat()——执行各自重写的版本
+        animal1.eat(); // 输出: 小黑正啃骨头
+        animal2.eat(); // 输出: 小白正在吃鱼
 
-        System.out.println("--------------------");
-        cat.printInfo();
-        cat.eat();
-        // 使用 Cat 类特有的方法
-        cat.meow();    
+        // 用数组存放多个动物（多态的典型应用）
+        Animal[] animals = {
+            new Dog ("小黑",3,"拉布拉多"),
+            new Cat("小白",2, true),
+            new Dog("旺财",5,"柴犬")
+        };
+
+        System.out.println("--- 所有动物吃东西 ---");
+        for (Animal a: animals) {
+            a.eat(); // 根据实际对象类型调用对应的eat()方法
+        }
     }
 }
