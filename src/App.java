@@ -16,6 +16,9 @@ class Vehicle {
         this.brand = brand;
     }
 
+    public void getterbrand(){
+        System.out.println("品牌: " + brand);
+    }
     public void printInfo() {
         System.out.println("品牌: " + brand);
     }
