@@ -1,69 +1,71 @@
-// test pull
-// 定义接口： 可以驾驶的
-interface Drivable {
-    void drive();
+// 接口： 会游泳
+interface Swimmable {
+    void swim();
 }
 
-// 定义接口： 可以充电的
-interface Chargeable {
-    void charge();
+// 抽象类： 动物
+abstract class Animal{
+    private String name;
+    public Animal(String name){
+        this.name = name;
+    }
+
+    // 普通方法： 所有动物都一样
+    public void sleep(){
+        System.out.println(name + " 在睡觉");
+    }
+
+    public String getName(){
+        return name;
+    }   
+
+    // 抽象方法； 每种动物吃东西的方式不同，留给子类实现
+    public abstract void eat(); 
 }
 
-// 定义父类： 交通工具
-class Vehicle {
-    private String brand;
-    public Vehicle(String brand) {
-        this.brand = brand;
-    }
-
-    public void getterbrand(){
-        System.out.println("品牌: " + brand);
-    }
-    public void printInfo() {
-        System.out.println("品牌: " + brand);
-    }
-}
-
-// 定义子类： 普通汽车，继承交通工具，实现可驾驶
-class Car extends Vehicle implements Drivable {
-    public Car(String brand) {
-        super(brand);
+// 子类： 狗
+class Dog extends Animal implements Swimmable{
+    public Dog(String name){
+        super(name);
     }
 
     @Override
-    public void drive() {
-        System.out.println("汽车正在驾驶...");
-    }
-}
-
-// 定义子类： 电动汽车，继承交通工具，实现可驾驶和可充电
-class ElectricCar extends Vehicle implements Drivable, Chargeable {
-    public ElectricCar(String brand) {
-        super(brand);
+    public void eat() {
+        System.out.println(getName() + "在啃骨头!");
     }
 
     @Override
-    public void drive() {
-        System.out.println("电动汽车正在驾驶...");
+    public void swim() {
+        System.out.println(getName() + "在游泳!");
+    }   
+}
+
+// 子类： 猫
+class Cat extends Animal{
+    public Cat (String name){
+        super(name);
     }
 
     @Override
-    public void charge() {
-        System.out.println("电动汽车正在充电...");
+    public void eat(){
+        System.out.println(getName() + "在吃鱼!");
     }
 }
+
 
 // main
 public class App {
     public static void main(String[] args) {
-        Car car = new Car("丰田");
-        ElectricCar ec = new ElectricCar("特斯拉");
+      
+        Dog dog = new Dog("小黑");
+        Cat cat = new Cat("小白");
 
-        car.printInfo();
-        car.drive();
+        dog.eat();
+        dog.sleep();
+        dog.swim();
+
         System.out.println("---");
-        ec.printInfo();
-        ec.drive();
-        ec.charge();
+        cat.eat();
+        cat.sleep();    
     }
 }
