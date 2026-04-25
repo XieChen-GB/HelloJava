@@ -1,67 +1,65 @@
-// 定义接口：可以游泳的
-interface Swimmable {
-    void swim();    
+// 定义接口： 可以驾驶的
+interface Drivable {
+    void drive();
 }
 
-// 定义接口：可以飞的
-interface Flyable{
-    void fly();
+// 定义接口： 可以充电的
+interface Chargeable {
+    void charge();
 }
 
-// 父类： 动物
-class Animal{
-    String name;
-    public Animal(String name) {
-        this.name = name;
+// 定义父类： 交通工具
+class Vehicle {
+    private String brand;
+    public Vehicle(String brand) {
+        this.brand = brand;
     }
 
-    public void eat() {
-        System.out.println(name + "在吃东西");
+    public void printInfo() {
+        System.out.println("品牌: " + brand);
     }
 }
-// 狗：继承 Animal，实现 Swimmable 接口
-class Dog extends Animal implements Swimmable {
-    public Dog(String name) {
-        super(name);
+
+// 定义子类： 普通汽车，继承交通工具，实现可驾驶
+class Car extends Vehicle implements Drivable {
+    public Car(String brand) {
+        super(brand);
     }
 
     @Override
-    public void swim() {
-        System.out.println(name + "正在游泳");
+    public void drive() {
+        System.out.println("汽车正在驾驶...");
     }
 }
 
-// 鸭子：继承 Animal，同时实现 Swimmable 和 Flyable 两个接口
-class Duck extends Animal implements Swimmable , Flyable {
-    public Duck (String name){
-        super(name);
+// 定义子类： 电动汽车，继承交通工具，实现可驾驶和可充电
+class ElectricCar extends Vehicle implements Drivable, Chargeable {
+    public ElectricCar(String brand) {
+        super(brand);
     }
 
     @Override
-    public void swim() {
-        System.out.println(name + "在游泳");
+    public void drive() {
+        System.out.println("电动汽车正在驾驶...");
     }
 
     @Override
-    public void fly() {
-        System.out.println(name + "在飞翔");
+    public void charge() {
+        System.out.println("电动汽车正在充电...");
     }
 }
 
+// main
 public class App {
     public static void main(String[] args) {
+        Car car = new Car("丰田");
+        ElectricCar ec = new ElectricCar("特斯拉");
 
-        Dog dog = new Dog("小黑");
-        Duck duck = new Duck("唐老鸭");
-
-
-        dog.eat();
-        dog.swim();
-
+        car.printInfo();
+        car.drive();
         System.out.println("---");
-
-        duck.eat();
-        duck.swim();
-        duck.fly();
+        ec.printInfo();
+        ec.drive();
+        ec.charge();
     }
 }
