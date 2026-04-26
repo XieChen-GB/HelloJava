@@ -1,88 +1,48 @@
-// 定义接口： 可打印的
-interface Printable {
-    void printInfo();
-}
+import java.util.ArrayList;
 
-// 定义抽象类： 图形
-abstract class Shape {
-    private String color;
+class Student{
+    private String name;
+    private int score;
+
+    // 构造
+    public Student (String name,int score){
+        this.name = name;
+        this.score = score;
+    }
+
+    public String getName(){ return name; }
+    public int getScore(){ return score; }
     
-    // 构造方法
-    public Shape(String color) {
-        this.color = color;
-    }
-
-    // 抽象方法： 计算面积
-    abstract double area();
-
-    // 具体方法： 获取颜色
-    public String getColor() {
-        return color;
+    public void printInfo(){
+        System.out.println("姓名：" + name + " 成绩：" + score);
     }
 }
 
-// 定义子类； 圆形，实装接口可打印的
-class Circle extends Shape implements Printable {
-    private double radius;
-    
-    // 构造方法
-    public Circle(String color, double radius){
-        super(color);
-        this.radius = radius;
-    }
-
-    // 实装父类的抽象方法
-    @Override
-    public double area(){
-        return Math.PI * radius * radius;
-    }
-    
-    // 实装接口的方法
-    @Override
-    public void printInfo() {
-        System.out.println("图形: 圆形");
-        System.out.println("颜色: " + getColor());
-        System.out.println("半径: " + radius);
-        System.out.println("面积: " + Math.round(area() * 10) / 10.0);
-    }
-}
-
-// 定义子类： 长方形，实装接口可打印的
-class Rectangle extends Shape implements Printable {
-    private double width;
-    private double height;
-
-    // 构造方法
-    public Rectangle(String color, double width, double height) {
-        super(color);
-        this.width = width;
-        this.height = height;
-    }
-
-    // 实装父类的抽象方法
-    @Override
-    public double area(){
-        return width * height;
-    }
-
-    // 实装接口的方法
-    @Override
-    public void printInfo() {
-        System.out.println("图形：长方形");
-        System.out.println("颜色: " + getColor());
-        System.out.println("宽: " + width + ",高: " + height);
-        System.out.println("面积: " + Math.round(area() * 10) / 10.0);
-    }
-}
-
-// main
 public class App {
     public static void main(String[] args) {
-        Circle c = new Circle("红色" ,5);
-        Rectangle r = new Rectangle("蓝色", 4, 6);
         
-        c.printInfo();
-        System.out.println("---");
-        r.printInfo();    
+        // 创建存放 Student 对象的 ArrayList
+        ArrayList<Student> students = new ArrayList<>();
+
+        // 添加学生 
+        students.add(new Student("谢晨", 85 ));
+        students.add(new Student("田中", 92));
+        students.add(new Student("山田", 67));
+
+        // 遍历所有学生
+        System.out.println("---所有学生---");
+        for (Student s : students){
+            s.printInfo();
+        }
+
+        // 找出成绩最高的学生
+        Student best = students.getFirst();
+        for ( Student s : students ){
+            if (s.getScore() > best.getScore()){
+                best = s;
+            }
+        }
+        System.out.println("---成绩最高---");
+        best.printInfo();
     }
 }
