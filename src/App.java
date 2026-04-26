@@ -1,71 +1,88 @@
-// 接口： 会游泳
-interface Swimmable {
-    void swim();
+// 定义接口： 可打印的
+interface Printable {
+    void printInfo();
 }
 
-// 抽象类： 动物
-abstract class Animal{
-    private String name;
-    public Animal(String name){
-        this.name = name;
+// 定义抽象类： 图形
+abstract class Shape {
+    private String color;
+    
+    // 构造方法
+    public Shape(String color) {
+        this.color = color;
     }
 
-    // 普通方法： 所有动物都一样
-    public void sleep(){
-        System.out.println(name + " 在睡觉");
+    // 抽象方法： 计算面积
+    abstract double area();
+
+    // 具体方法： 获取颜色
+    public String getColor() {
+        return color;
     }
-
-    public String getName(){
-        return name;
-    }   
-
-    // 抽象方法； 每种动物吃东西的方式不同，留给子类实现
-    public abstract void eat(); 
 }
 
-// 子类： 狗
-class Dog extends Animal implements Swimmable{
-    public Dog(String name){
-        super(name);
+// 定义子类； 圆形，实装接口可打印的
+class Circle extends Shape implements Printable {
+    private double radius;
+    
+    // 构造方法
+    public Circle(String color, double radius){
+        super(color);
+        this.radius = radius;
     }
 
+    // 实装父类的抽象方法
     @Override
-    public void eat() {
-        System.out.println(getName() + "在啃骨头!");
+    public double area(){
+        return Math.PI * radius * radius;
     }
-
+    
+    // 实装接口的方法
     @Override
-    public void swim() {
-        System.out.println(getName() + "在游泳!");
-    }   
-}
-
-// 子类： 猫
-class Cat extends Animal{
-    public Cat (String name){
-        super(name);
-    }
-
-    @Override
-    public void eat(){
-        System.out.println(getName() + "在吃鱼!");
+    public void printInfo() {
+        System.out.println("图形: 圆形");
+        System.out.println("颜色: " + getColor());
+        System.out.println("半径: " + radius);
+        System.out.println("面积: " + Math.round(area() * 10) / 10.0);
     }
 }
 
+// 定义子类： 长方形，实装接口可打印的
+class Rectangle extends Shape implements Printable {
+    private double width;
+    private double height;
+
+    // 构造方法
+    public Rectangle(String color, double width, double height) {
+        super(color);
+        this.width = width;
+        this.height = height;
+    }
+
+    // 实装父类的抽象方法
+    @Override
+    public double area(){
+        return width * height;
+    }
+
+    // 实装接口的方法
+    @Override
+    public void printInfo() {
+        System.out.println("图形：长方形");
+        System.out.println("颜色: " + getColor());
+        System.out.println("宽: " + width + ",高: " + height);
+        System.out.println("面积: " + Math.round(area() * 10) / 10.0);
+    }
+}
 
 // main
 public class App {
     public static void main(String[] args) {
-      
-        Dog dog = new Dog("小黑");
-        Cat cat = new Cat("小白");
-
-        dog.eat();
-        dog.sleep();
-        dog.swim();
-
+        Circle c = new Circle("红色" ,5);
+        Rectangle r = new Rectangle("蓝色", 4, 6);
+        
+        c.printInfo();
         System.out.println("---");
-        cat.eat();
-        cat.sleep();    
+        r.printInfo();    
     }
 }
