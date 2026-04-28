@@ -1,72 +1,53 @@
-import java.util.ArrayList;
+import java.util.HashMap;
 
-class Student{
+class Student {
     private String name;
     private int score;
 
-    // 构造
+    // 构造method
     public Student (String name,int score){
         this.name = name;
         this.score = score;
     }
 
-    public String getName(){ return name; }
+    // method
     public int getScore(){ return score; }
-    
+
     public void printInfo(){
         System.out.println("姓名：" + name + " 成绩：" + score);
     }
-}
+} 
 
 public class App {
     public static void main(String[] args) {
-        
-        // 创建存放 Student 对象的 ArrayList
-        ArrayList<Student> students = new ArrayList<>();
-        
-        // 添加5名学生
-        students.add(new Student("学生甲", 78));
-        students.add(new Student("学生乙", 81));
-        students.add(new Student("学生丙", 93));
-        students.add(new Student("学生丁", 55));
-        students.add(new Student("学生戊", 60));
+        // Key = 学号，Value = Student 对象
+        HashMap<String,Student>  map = new HashMap<>();
 
+        map.put("S001", new Student("谢晨", 85));
+        map.put("S002", new Student("田中", 92));
+        map.put("S003", new Student("山田", 67));
 
-     
-        Student best = students.getFirst(), wrost = students.getFirst();
-        double average = 0.0;
-        //输出所有学生成绩
-        System.out.println("--所有学生---");
-        for(Student s : students){
-            s.printInfo();
-            if (s.getScore() > best.getScore()) {
-                best = s;
-            } 
-            if (s.getScore() < wrost.getScore()) {
-                wrost = s;
-            }
+        // 用学号查找学生
+        System.out.println("---查找S002---");
+        map.get("S002").printInfo();
 
-            average = average + s.getScore();
+        // 遍历所有学生
+        System.out.println("---所有学生---");
+        for (String id : map.keySet()){
+            System.out.print("学号：" + id + " ");
+            map.get(id).printInfo();
         }
 
-        System.out.println();
-        System.out.println("--成绩最高---");
-        best.printInfo();
-
-        System.out.println();
-        System.out.println("--成绩最低---");
-        wrost.printInfo();
-
-        System.out.println();
-        System.out.println("--平均分---");
-        average = average/students.size();
-        System.out.println(String.format("%.1f 分", average));
-
-        System.out.println("--及格学生---");
-        for (Student s : students) {
-            if (s.getScore() >= 60) {
-                s.printInfo();
-            }
+        // 判断学号 S004 是否存在
+        if (map.containsKey("S004")) {
+            map.get("S004").printInfo();
+        } else {
+            System.out.println("学号 S004 不存在！");
         }
+
+        // 更新 S001 的成绩
+        map.put("S001", new Student("谢晨", 99));
+        System.out.println("--- 更新后 S001 ---");
+        map.get("S001").printInfo();
     }
 }
