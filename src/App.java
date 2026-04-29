@@ -1,14 +1,29 @@
-public class App{
+public class App {
+
     public static void main(String[] args) {
         
-        // 新功能：用 for 循环打印九九乘法表
-        System.out.println("---九九乘法---");
-        for (int i= 1; i<=9; i++){
-            for (int j = 1; j<=i; j++){
-                System.out.print(j + "×" + i + "=" + (i * j) + "\t");
-            }
-            System.out.println();
-        }
+        // 新功能：用 switch 判断星期
+        int day = 3;
 
+        switch (day) {
+            case 1:
+                System.out.println("星期一");
+                break;
+            case 2:
+                System.out.println("星期二");
+                break;
+            case 3:
+                System.out.println("星期三");
+                break;
+            case 4:
+                System.out.println("星期四");
+                break;
+            case 5:
+                System.out.println("星期五");
+                break;
+            default:
+                System.out.println("周末");
+                break;
+        }
     }
 }
