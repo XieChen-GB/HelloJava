@@ -1,23 +1,23 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 public class App {
 
     public static void main(String[] args) {
         
-        // 追加写入
-         
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt", true)); // 追加模式
+        // try-with-resources : 自动关闭资源
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output2.txt", true))) {
+            writer.write("第一行：自动关闭测试");
             writer.newLine();
-            writer.write("第四行：这是追加的内容");
-            writer.close();
-            System.out.println("追加成功！");
+            writer.write("第二行：不要手动close()");
+            writer.newLine();
+            writer.write("更安全");
+            
+            System.out.print("写入成功");
+            
         } catch (IOException e) {
-            System.out.println("追加失败：" + e.getMessage());
+            System.out.println("写入失败：" + e.getMessage());
         }
-
     }
 }
