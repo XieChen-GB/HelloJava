@@ -1,42 +1,23 @@
-// 自定义异常类
-class AgeException extends Exception {
-    public AgeException(String message){
-        super(message);
-    }
-}
-
-class Person {
-    private String name;
-    private int age;
-
-    public Person(String name, int age) throws AgeException{
-        if(age < 0 || age >150 ) {
-            throw new AgeException("年龄不合法：" + age);
-        }
-        this.name = name;
-        this.age = age;
-    }
-
-    public void printInfo(){
-        System.out.println("姓名： " + name + " 年龄： " + age);
-    }
-}
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 public class App {
 
     public static void main(String[] args) {
-        // 正常情况
+        
+        // 追加写入
+         
         try {
-            Person p1 = new Person("谢晨", 57);
-        } catch (AgeException e) {
-            System.out.println("异常：" + e.getMessage());
+            BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt", true)); // 追加模式
+            writer.newLine();
+            writer.write("第四行：这是追加的内容");
+            writer.close();
+            System.out.println("追加成功！");
+        } catch (IOException e) {
+            System.out.println("追加失败：" + e.getMessage());
         }
 
-        // 不合法的年龄
-        try {
-            Person p2 = new Person("田中", -10);
-        } catch (AgeException e) {
-            System.out.println("异常： " + e.getMessage());
-        }
     }
 }
