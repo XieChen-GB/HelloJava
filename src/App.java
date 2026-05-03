@@ -1,139 +1,165 @@
-// 综合练习：员工管理系统
+// 练习1：图书馆借阅系统
+import java.util.ArrayList;
 
-import java.util.HashMap;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
 
-// 定义抽象类
-abstract class Employee {
-    String id;      // 员工号
-    String name;    // 姓名
-    double salary;  // 薪资 
+// 自定义异常： 当已经是借出状态时，抛出自定义异常
+class ItemNotAvailableException extends Exception{
+    // 构造方法
+    public ItemNotAvailableException(String message){
+        super(message);
+    }
+}
+// 定义图书馆藏抽象类
+abstract class LibraryItem{
+    // 成员变量
+    private String itemID;  // 编号
+    private String title;   // 标题
+    private boolean available = true;
 
     // 构造方法
-    Employee(String id, String name, double salary){
-        this.id = id;
-        this.name = name;
-        this.salary = salary;
+    LibraryItem(String itemID, String title){
+        this.itemID = itemID;
+        this.title = title;
     }
 
-    // 抽象方法
-    abstract String getRole(); // 返回职位名称
-    abstract void printInfo();
-    abstract String getInfo();
+    // 抽象方法： 返回物品类型
+    abstract String getType();
 
     // 普通方法
-    public double getSalary(){ return salary; }  // 获取薪资    
+    public String getItemId(){ return itemID; }
+    
+    public String getTitle(){ return title; }
+
+    public boolean isAvailable () { return available; }
+    
+    // 当已经是借出状态时，抛出自定义异常
+    public void borrowItem() throws ItemNotAvailableException {
+        if(!available){
+            throw new ItemNotAvailableException(getTitle() + "当前不可借！");
+        }
+            available = false;
+            System.out.println(title + "已借出");
+    }
+    
+    public void returnItem(){
+        available = true;
+        System.out.println(title + "已归还");
+    }
 }
-
-// 定义子类
-class FullTimeEmployee  extends Employee {
-    
-    // 构造方法: 调用父类构造方法
-    FullTimeEmployee(String id, String name, double salary){
-        super(id, name, salary);
-    }
-    
-    // 实装抽象方法： 返回 "全职员工"
-    @Override 
-    public String getRole() {
-        return("全职员工");
-    }
-
-    // 实装抽象方法： 返回全部信息
-    @Override
-    public String getInfo(){
-        return "员工号： " + id + ", 姓名： " +  name + ", 薪资： " + String.format("%.2f",salary);
-    }
-    
-    // 实装接口： 打印全部信息
-    @Override 
-    public void printInfo() {
-        System.out.println("员工号： " + id + ", 姓名： " +  name + ", 薪资： " + String.format("%.2f",salary));
-    }    
-}
-
-class PartTimeEmployee extends Employee{
-    int hourPerWeek;
+// 定义图书子类
+class Book extends LibraryItem{
+    private String author;
 
     // 构造方法
-    PartTimeEmployee(String id, String name, double salary, int hourPerWeek){
-        super(id,name,salary);
-        this.hourPerWeek = hourPerWeek;        
-    }
-    
-    // 实装抽象方法； 返回“兼职员工”
-    @Override   
-    public String getRole(){
-        return("兼职员工");    
+    Book(String itemId, String title, String author){
+        super(itemId, title);
+        this.author = author;
     }
 
-    // 实装抽象方法： 返回全部信息
+    // 实装抽象方法
     @Override
-    public String getInfo(){
-        return "员工号： " + id + ", 姓名： " +  name + ", 薪资： " + String.format("%.2f",salary) + ", 每周工时： " + hourPerWeek;
-    }
+    public String getType(){ return "图书";}
 
-    // 实装接口： 打印全部信息
-    @Override 
-    public void printInfo(){
-        System.out.println("员工号： " + id + ", 姓名： " +  name + ", 薪资： " + String.format("%.2f",salary) + ", 每周工时： " + hourPerWeek);    
+    @Override
+    public String toString(){
+        return "[图书] 编号： " + getItemId() + " 标题： " + getTitle() + " 作者： " + author + " 状态： " + 
+            (isAvailable() ? "可借" : "已借出");
     }
 }
 
+// 定义DVD子类
+class DVD extends LibraryItem{
+    private int duration;
+
+    // 构造方法
+    DVD(String itemId, String title, int duration){
+        super(itemId, title);
+        this.duration = duration;        
+    }
+
+    // 实装抽象方法
+    @Override
+    public String getType(){
+        return "DVD";
+    }
+
+    @Override
+    public String toString(){
+        return "[DVD] 编号： " + getItemId() + " 标题： " + getTitle() + " 时长： " +  duration + "分钟 状态： " + 
+            (isAvailable() ? "可借" : "已借出");
+
+    }
+}
+
+// main
 public class App {
 
     public static void main(String[] args) {
-        HashMap<String, Employee> hsmapEmp = new HashMap<>();
+            
+        // 定义存放馆藏的动态数组
+        ArrayList<LibraryItem> arrItem = new ArrayList<>();
 
-        // 添加3名全职员工和2名兼职员工
-        hsmapEmp.put("E001", new FullTimeEmployee("E001", "谢晨", 8000));
-        hsmapEmp.put("E002", new FullTimeEmployee("E002", "田中", 12000));
-        hsmapEmp.put("E003", new FullTimeEmployee("E003", "山田", 4500));
+        // 添加3本图书
+        arrItem.add(new Book("B001", "解忧杂货店", "东野圭吾"));
+        arrItem.add(new Book("B002", "追风筝的人", "卡勒德·胡赛尼"));
+        arrItem.add(new Book("B003", "三体", "刘慈欣"));
 
-        hsmapEmp.put("P001", new PartTimeEmployee("P001", "铃木", 3000, 20));
-        hsmapEmp.put("P002", new PartTimeEmployee("P002", "佐藤", 4800, 30));
+        // 添加3张DVD
+        arrItem.add(new DVD("D001", "千与千寻", 125));
+        arrItem.add(new DVD("D002", "肖申克的救赎", 142));
 
-        // 打印所有员工信息
-        System.out.println("--- 所有员工 ---");
-        String mostPaiedId = "";
-        for(String id : hsmapEmp.keySet()){
+        // 输出所有馆藏信息
+        System.out.println("--- 所有馆藏 ---");
+        for (LibraryItem item : arrItem){
+            System.out.println(item.toString());
+        }
 
-            hsmapEmp.get(id).printInfo();        
-            if(mostPaiedId.equals("")){
-                mostPaiedId = id;
-            } else {
-                if(hsmapEmp.get(id).getSalary() > hsmapEmp.get(mostPaiedId).getSalary()){
-                    mostPaiedId = id;
-                }
+        // 借出某本书（正常情况）
+        System.out.println("--- 借出 ---");
+        LibraryItem found = null;
+        for (LibraryItem item : arrItem){
+            if(item.getItemId().equals("D002")){
+                found = item;
+                break;
+            }
+        }
+        if (found != null){
+            try {
+                found.borrowItem();
+            } catch (ItemNotAvailableException e) {
+                System.out.println(e.getMessage());
             }
         }
 
-        // 薪资最高
-        System.out.println("--- 薪资最高 ---");
-        hsmapEmp.get(mostPaiedId).printInfo();
-
-        // 低于5000
-        System.out.println("--- 薪资低于5000 ---");
-        for(String id : hsmapEmp.keySet()){
-            if (hsmapEmp.get(id).getSalary() < 5000) {
-                hsmapEmp.get(id).printInfo();
+        // 再次借出同一本书（触发异常）
+        System.out.println("--- 再次借出（异常） ---");
+        if (found != null){
+            try {
+                found.borrowItem();
+            } catch (ItemNotAvailableException e) {
+                System.out.println(e.getMessage());
             }
         }
 
-        // 把所有员工信息写入 employees.txt 文件
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("employees.txt", false))) {
-            for (String id : hsmapEmp.keySet()){
-                writer.write(hsmapEmp.get(id).getInfo());
+        // 归还这本书
+        System.out.println("--- 归还 ---");
+        if(found != null){
+            found.returnItem();
+        }
+
+        // 写入libray.txt
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("libray.txt"))) {
+            for(LibraryItem item : arrItem){
+                writer.write(item.toString());
                 writer.newLine();
             }
             System.out.println("--- 写入文件成功 ---");
         } catch (IOException e) {
-            System.out.println("写入文件异常：" + e.getMessage());
+            System.out.println("写入文件异常： " + e.getMessage());
         }
     }
 }
-
-
