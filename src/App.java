@@ -1,165 +1,231 @@
-// 练习1：图书馆借阅系统
-import java.util.ArrayList;
+// 简单银行账户信息
+
+import java.util.HashMap;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-
-// 自定义异常： 当已经是借出状态时，抛出自定义异常
-class ItemNotAvailableException extends Exception{
-    // 构造方法
-    public ItemNotAvailableException(String message){
+// 自定义异常： 存取金额必须大于0
+class InvalidAmountException  extends Exception{
+    InvalidAmountException (String message){
         super(message);
     }
 }
-// 定义图书馆藏抽象类
-abstract class LibraryItem{
-    // 成员变量
-    private String itemID;  // 编号
-    private String title;   // 标题
-    private boolean available = true;
+
+// 自定义异常: 余额不足
+class InsufficientFundsException extends Exception{
+    InsufficientFundsException(String message){
+        super(message);
+    }
+}
+// 抽象类： 银行账户
+abstract class BankAccount{
+    private String accountId;
+    private String owner;
+    private double balance;
 
     // 构造方法
-    LibraryItem(String itemID, String title){
-        this.itemID = itemID;
-        this.title = title;
+    BankAccount(String accountId, String owner, double balance){
+        this.accountId = accountId;
+        this.owner = owner;
+        this.balance = balance;
     }
 
-    // 抽象方法： 返回物品类型
-    abstract String getType();
+    abstract String getAccountType();
 
-    // 普通方法
-    public String getItemId(){ return itemID; }
-    
-    public String getTitle(){ return title; }
+    public String getAccountId(){ return accountId; }
 
-    public boolean isAvailable () { return available; }
-    
-    // 当已经是借出状态时，抛出自定义异常
-    public void borrowItem() throws ItemNotAvailableException {
-        if(!available){
-            throw new ItemNotAvailableException(getTitle() + "当前不可借！");
+    public String getOwner(){ return owner; }
+
+    public double getBalance(){ return balance; }
+
+    protected void setBalance( double balance) { this.balance = balance;}
+
+    // 存款
+    public void deposit(double ammout) throws InvalidAmountException {
+        if(ammout <= 0){
+            throw new InvalidAmountException ("处理异常： 存入金额必须大于0!");
         }
-            available = false;
-            System.out.println(title + "已借出");
+        setBalance(getBalance() + ammout); 
     }
-    
-    public void returnItem(){
-        available = true;
-        System.out.println(title + "已归还");
+
+    // 取款
+    public void withdraw(double ammount) throws InvalidAmountException, InsufficientFundsException{
+        if (ammount <= 0){
+            throw new InvalidAmountException("处理异常： 取款金额必须大于0");
+        }
+        if(ammount > balance){
+            throw new InsufficientFundsException("处理异常： 余额不足！"); 
+        }
+        setBalance(getBalance() - ammount);
+        
     }
 }
-// 定义图书子类
-class Book extends LibraryItem{
-    private String author;
-
+    // 子类： 储蓄账户
+class SavingAccount extends BankAccount{
     // 构造方法
-    Book(String itemId, String title, String author){
-        super(itemId, title);
-        this.author = author;
+    private double interestRate;
+    SavingAccount(String accountId, String owner, double balance, double interestRate){
+        super(accountId, owner, balance);
+        this.interestRate = interestRate;
     }
 
-    // 实装抽象方法
+    public double getInterestRate(){ return interestRate; }
+
     @Override
-    public String getType(){ return "图书";}
+    public String getAccountType(){ return "储蓄账户";}
 
     @Override
     public String toString(){
-        return "[图书] 编号： " + getItemId() + " 标题： " + getTitle() + " 作者： " + author + " 状态： " + 
-            (isAvailable() ? "可借" : "已借出");
+        return "[" + getAccountType() + "] 账号: " + getAccountId() + " 户主： " + getOwner() + " 余额: " 
+                   + String.format("%.2f", getBalance()) + " 年利率: " + String.format("%.1f%%", getInterestRate()*100);
     }
+
+    // 计算利息
+    public double addInterest(){ 
+        double interest = getBalance()*interestRate;
+        try {
+            deposit(interest);
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
+        }
+        return interest; }
+
 }
 
-// 定义DVD子类
-class DVD extends LibraryItem{
-    private int duration;
-
+// 子类： 支票账户
+class CheckingAccount extends BankAccount{
+    private double overdraftLimit; // 透支额度
     // 构造方法
-    DVD(String itemId, String title, int duration){
-        super(itemId, title);
-        this.duration = duration;        
+    CheckingAccount(String accountId, String owner, double balance,double overdraftLimit){
+        super(accountId, owner, balance);
+        this.overdraftLimit = overdraftLimit;
     }
 
-    // 实装抽象方法
-    @Override
-    public String getType(){
-        return "DVD";
-    }
+    public double getOverdraftLimit(){ return overdraftLimit;}
 
     @Override
-    public String toString(){
-        return "[DVD] 编号： " + getItemId() + " 标题： " + getTitle() + " 时长： " +  duration + "分钟 状态： " + 
-            (isAvailable() ? "可借" : "已借出");
+    public String getAccountType(){ return "支票账户";}
 
+    @Override
+    public void withdraw(double ammount) throws InvalidAmountException,InsufficientFundsException{
+        if ( ammount <= 0){
+            throw new InvalidAmountException("处理异常： 取款金额必须大于0");
+        }
+        if ((ammount - getBalance()) > overdraftLimit){
+            throw new InsufficientFundsException("处理异常： 超出透支额度");
+        }
+
+        setBalance(getBalance() - ammount);
+    } 
+
+    @Override
+    public String toString() {
+        return "[" + getAccountType() + "] 账号: " + getAccountId() + " 户主： " + getOwner() + " 余额: " 
+                      + String.format("%.2f", getBalance()) + " 透支额度: " 
+                      + String.format("%.2f",getOverdraftLimit());
     }
+
 }
 
-// main
 public class App {
 
     public static void main(String[] args) {
+        
+        HashMap<String,BankAccount> hsmapAccount = new HashMap<>();
+        hsmapAccount.put("S001", new SavingAccount("S001", "谢晨", 10000, 0.035));
+        hsmapAccount.put("C001", new CheckingAccount("C001", "田中", 5000, 2000));
+
+        // 账户信息
+        for (String account : hsmapAccount.keySet()){
+            System.out.println(hsmapAccount.get(account).toString());
+
+        }
+
+        // 存款
+        System.out.println("--- 存款 ---");
+        double ammount = 2000.0;
+        try {
+            hsmapAccount.get("S001").deposit(ammount);
+            System.out.println(hsmapAccount.get("S001").getOwner() + " 存入 " + 
+                               String.format("%.2f", ammount) + 
+                               "元，当前余额: " + String.format("%.2f", hsmapAccount.get("S001").getBalance()));
+        } catch (InvalidAmountException  e) {
+            System.out.println(e.getMessage());  
+        } 
+
+        ammount = 1000.0;
+        try {
+            hsmapAccount.get("C001").deposit(ammount);
+            System.out.println(hsmapAccount.get("C001").getOwner() + " 存入 " + 
+                                String.format("%.2f", ammount)
+                                + "元，当前余额: " + String.format("%.2f", hsmapAccount.get("C001").getBalance()));
+
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
+        }
+
+        // 取款
+        System.out.println("--- 取款 ---");
+        ammount = 3000;
+        try {
+            hsmapAccount.get("S001").withdraw(ammount);
+            System.out.println(hsmapAccount.get("S001").getOwner() + " 取出 " + 
+                String.format("%.2f", ammount) + "元，当前余额: " + 
+                String.format("%.2f", hsmapAccount.get("S001").getBalance()));
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
+        } catch (InsufficientFundsException e){
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("--- 余额不足（异常） ---");
+        ammount = 10000;
+        try {
+            hsmapAccount.get("S001").withdraw(ammount);
+            System.out.println(hsmapAccount.get("S001").getOwner() + " 取出 " + 
+                String.format("%.2f", ammount) + "元，当前余额: " + 
+                String.format("%.2f", hsmapAccount.get("S001").getBalance()));
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
+        } catch (InsufficientFundsException e){
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("--- 金额不足（异常） ---");
+        ammount = -1000;
+        try {
+            hsmapAccount.get("C001").withdraw(ammount);
+            System.out.println(hsmapAccount.get("C001").getOwner() + " 取出 " + 
+                String.format("%.2f", ammount) + "元，当前余额: " + 
+                String.format("%.2f", hsmapAccount.get("C001").getBalance()));
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
+        } catch (InsufficientFundsException e){
+            System.out.println(e.getMessage());
+        }
+
+        // 计算利息
+        System.out.println("--- 计算利息 ---");
+        double interest;
+        BankAccount account = hsmapAccount.get("S001");
+        if (account instanceof SavingAccount){  
+            SavingAccount saAccount = (SavingAccount) account; // 强制类型转换
+            interest = saAccount.addInterest();
+            System.out.println(saAccount.getOwner() + " 利息收入： " + String.format("%.2f", interest)
+            + " 元，当前余额: " + String.format("%.2f", saAccount.getBalance()) + " 元");
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("accounts.txt"))){
             
-        // 定义存放馆藏的动态数组
-        ArrayList<LibraryItem> arrItem = new ArrayList<>();
-
-        // 添加3本图书
-        arrItem.add(new Book("B001", "解忧杂货店", "东野圭吾"));
-        arrItem.add(new Book("B002", "追风筝的人", "卡勒德·胡赛尼"));
-        arrItem.add(new Book("B003", "三体", "刘慈欣"));
-
-        // 添加3张DVD
-        arrItem.add(new DVD("D001", "千与千寻", 125));
-        arrItem.add(new DVD("D002", "肖申克的救赎", 142));
-
-        // 输出所有馆藏信息
-        System.out.println("--- 所有馆藏 ---");
-        for (LibraryItem item : arrItem){
-            System.out.println(item.toString());
-        }
-
-        // 借出某本书（正常情况）
-        System.out.println("--- 借出 ---");
-        LibraryItem found = null;
-        for (LibraryItem item : arrItem){
-            if(item.getItemId().equals("D002")){
-                found = item;
-                break;
-            }
-        }
-        if (found != null){
-            try {
-                found.borrowItem();
-            } catch (ItemNotAvailableException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-        // 再次借出同一本书（触发异常）
-        System.out.println("--- 再次借出（异常） ---");
-        if (found != null){
-            try {
-                found.borrowItem();
-            } catch (ItemNotAvailableException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-        // 归还这本书
-        System.out.println("--- 归还 ---");
-        if(found != null){
-            found.returnItem();
-        }
-
-        // 写入libray.txt
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("libray.txt"))) {
-            for(LibraryItem item : arrItem){
-                writer.write(item.toString());
+            for(String accountId : hsmapAccount.keySet()){
+                writer.write(hsmapAccount.get(accountId).toString());
                 writer.newLine();
             }
             System.out.println("--- 写入文件成功 ---");
         } catch (IOException e) {
-            System.out.println("写入文件异常： " + e.getMessage());
+            System.out.println(e.getMessage());
         }
-    }
+     }
 }
