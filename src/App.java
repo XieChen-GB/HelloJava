@@ -1,231 +1,230 @@
-// 简单银行账户信息
+// 练习3: 学生选课系统
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+// 自定义异常
+class CourseFullException extends Exception{    // 课程已满时抛出
 
-// 自定义异常： 存取金额必须大于0
-class InvalidAmountException  extends Exception{
-    InvalidAmountException (String message){
+   CourseFullException(String message){
+    super(message);
+   } 
+
+}
+
+class AlreadyEnrolledException extends Exception{   // 学生已选该课时抛出
+
+    AlreadyEnrolledException(String message){
         super(message);
-    }
+    }    
+
 }
 
-// 自定义异常: 余额不足
-class InsufficientFundsException extends Exception{
-    InsufficientFundsException(String message){
-        super(message);
-    }
-}
-// 抽象类： 银行账户
-abstract class BankAccount{
-    private String accountId;
-    private String owner;
-    private double balance;
+// class 课程
+class Course{
+
+    private String courseId;
+    private String courseName;
+    private int maxStudents;
+    private ArrayList<String> enrolledStudents = new ArrayList<>(); // 选课学生姓名
 
     // 构造方法
-    BankAccount(String accountId, String owner, double balance){
-        this.accountId = accountId;
-        this.owner = owner;
-        this.balance = balance;
+    Course(String courseId, String courseName, int maxStudents){
+
+        this.courseId = courseId;
+        this.courseName = courseName;
+        this.maxStudents = maxStudents;
+
     }
 
-    abstract String getAccountType();
+    // 方法
+    public String getCourseId() { return courseId; }
+    public String getCourseName(){ return courseName; }
+    public int getEnrolledCount(){ return enrolledStudents.size(); }
+    
+    // 方法： 选课，已满抛出 CourseFullException，已选抛出AlreadyEnrolledException
+    public void enroll(String studentName) throws CourseFullException, AlreadyEnrolledException{
 
-    public String getAccountId(){ return accountId; }
-
-    public String getOwner(){ return owner; }
-
-    public double getBalance(){ return balance; }
-
-    protected void setBalance( double balance) { this.balance = balance;}
-
-    // 存款
-    public void deposit(double ammout) throws InvalidAmountException {
-        if(ammout <= 0){
-            throw new InvalidAmountException ("处理异常： 存入金额必须大于0!");
+        if (getEnrolledCount() == maxStudents){
+            throw new CourseFullException("异常: " + courseName + " 课程已满! ");
         }
-        setBalance(getBalance() + ammout); 
+        for(int i = 0; i < enrolledStudents.size(); i++){
+            if(enrolledStudents.get(i).equals(studentName)) {
+                throw new AlreadyEnrolledException("异常: " + studentName + " 已选修 " + courseName);
+            }  
+        }     
+        enrolledStudents.add(studentName);
     }
-
-    // 取款
-    public void withdraw(double ammount) throws InvalidAmountException, InsufficientFundsException{
-        if (ammount <= 0){
-            throw new InvalidAmountException("处理异常： 取款金额必须大于0");
-        }
-        if(ammount > balance){
-            throw new InsufficientFundsException("处理异常： 余额不足！"); 
-        }
-        setBalance(getBalance() - ammount);
-        
-    }
-}
-    // 子类： 储蓄账户
-class SavingAccount extends BankAccount{
-    // 构造方法
-    private double interestRate;
-    SavingAccount(String accountId, String owner, double balance, double interestRate){
-        super(accountId, owner, balance);
-        this.interestRate = interestRate;
-    }
-
-    public double getInterestRate(){ return interestRate; }
-
-    @Override
-    public String getAccountType(){ return "储蓄账户";}
-
-    @Override
-    public String toString(){
-        return "[" + getAccountType() + "] 账号: " + getAccountId() + " 户主： " + getOwner() + " 余额: " 
-                   + String.format("%.2f", getBalance()) + " 年利率: " + String.format("%.1f%%", getInterestRate()*100);
-    }
-
-    // 计算利息
-    public double addInterest(){ 
-        double interest = getBalance()*interestRate;
-        try {
-            deposit(interest);
-        } catch (InvalidAmountException e) {
-            System.out.println(e.getMessage());
-        }
-        return interest; }
-
-}
-
-// 子类： 支票账户
-class CheckingAccount extends BankAccount{
-    private double overdraftLimit; // 透支额度
-    // 构造方法
-    CheckingAccount(String accountId, String owner, double balance,double overdraftLimit){
-        super(accountId, owner, balance);
-        this.overdraftLimit = overdraftLimit;
-    }
-
-    public double getOverdraftLimit(){ return overdraftLimit;}
-
-    @Override
-    public String getAccountType(){ return "支票账户";}
-
-    @Override
-    public void withdraw(double ammount) throws InvalidAmountException,InsufficientFundsException{
-        if ( ammount <= 0){
-            throw new InvalidAmountException("处理异常： 取款金额必须大于0");
-        }
-        if ((ammount - getBalance()) > overdraftLimit){
-            throw new InsufficientFundsException("处理异常： 超出透支额度");
-        }
-
-        setBalance(getBalance() - ammount);
-    } 
 
     @Override
     public String toString() {
-        return "[" + getAccountType() + "] 账号: " + getAccountId() + " 户主： " + getOwner() + " 余额: " 
-                      + String.format("%.2f", getBalance()) + " 透支额度: " 
-                      + String.format("%.2f",getOverdraftLimit());
+        
+        return "[" + getCourseId() + "] "  + getCourseName() + " 最大人数： " 
+            + maxStudents + " 已选： " + getEnrolledCount() + "人";
+
     }
 
 }
 
+// class: 学生
+class Student{
+    private String studentId;
+    private String name;
+    private ArrayList<String> enrolledCourses = new ArrayList<>();  // 已选课程名称 
+
+    // 构造方法
+    Student( String studentId, String name){
+        this.studentId = studentId;
+        this.name = name;
+    }
+
+    public String getStudentId(){ return studentId; }
+    public String getName(){ return name;}
+
+    public void addCourse(String courseName){ enrolledCourses.add(courseName); }    // 添加已选课程
+
+    public void printCourses(){     // 打印已选课程
+        System.out.print(name + "(" + studentId + ") " + "已选课程：");
+        if (enrolledCourses.isEmpty()){
+            System.out.println("无");
+        }  else { 
+            for ( int i = 0; i < enrolledCourses.size(); i++){
+                if( i == enrolledCourses.size() -1){    // 最后一个
+                    System.out.println(enrolledCourses.get(i));
+                } else {
+                    System.out.print(enrolledCourses.get(i) + "、");
+                }
+            }
+        }
+    }
+
+    public String getCourseInfo(){ // 返回已选课程
+        StringBuilder info = new StringBuilder();
+        info.append(name + "(" + studentId + ") " + "已选课程：");
+        if(enrolledCourses.isEmpty()){
+            info.append("无");
+        } else {
+            for(int i = 0; i < enrolledCourses.size(); i++){
+                if (i == enrolledCourses.size() -1){
+                    info.append(enrolledCourses.get(i));
+                } else{
+                    info.append(enrolledCourses.get(i) + "、");
+                }
+            }
+        }
+
+        return info.toString();
+    }
+}
+
+
+
+
+
 public class App {
+
+    // 静态方法： 选课
+    static void enrollCourse(HashMap<String,Course> hashmapCourse,
+                             HashMap<String,Student> hasmapStudent,
+                             String courseId,
+                             String studenId)                            
+    {
+        try {
+            Course course = hashmapCourse.get(courseId);
+            Student student = hasmapStudent.get(studenId);
+            
+            if (course == null){
+                System.out.println("课程不存在");
+                return;
+            } 
+            if(student == null){
+               System.out.println("学生不存在");
+               return; 
+            }
+
+            course.enroll(student.getName());
+            student.addCourse(course.getCourseName());
+            System.out.println(student.getName() + " 成功选修 " + course.getCourseName());
+
+        } catch (CourseFullException e) {
+            System.out.println(e.getMessage());
+        }
+          catch (AlreadyEnrolledException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+    }
 
     public static void main(String[] args) {
         
-        HashMap<String,BankAccount> hsmapAccount = new HashMap<>();
-        hsmapAccount.put("S001", new SavingAccount("S001", "谢晨", 10000, 0.035));
-        hsmapAccount.put("C001", new CheckingAccount("C001", "田中", 5000, 2000));
+        HashMap<String,Course> hasmapCourse = new HashMap<>();
+        HashMap<String,Student> hasmapStudent = new HashMap<>();
 
-        // 账户信息
-        for (String account : hsmapAccount.keySet()){
-            System.out.println(hsmapAccount.get(account).toString());
+        // 添加课程
+        hasmapCourse.put("C001", new Course("C001", "Java编程", 2));
+        hasmapCourse.put("C002", new Course("C002", "数据库基础", 3));
+        hasmapCourse.put("C003", new Course("C003", "网络安全", 2));
 
+        // 添加学生
+        hasmapStudent.put("S001", new Student("S001", "谢晨"));
+        hasmapStudent.put("S002", new Student("S002", "田中"));
+        hasmapStudent.put("S003", new Student("S003", "山田"));
+        hasmapStudent.put("S004", new Student("S004", "铃木"));
+
+        // 打印所有课程
+        System.out.println("--- 所有课程 ---");
+        for(String courseId : hasmapCourse.keySet()){
+
+            System.out.println(hasmapCourse.get(courseId).toString());
         }
 
-        // 存款
-        System.out.println("--- 存款 ---");
-        double ammount = 2000.0;
-        try {
-            hsmapAccount.get("S001").deposit(ammount);
-            System.out.println(hsmapAccount.get("S001").getOwner() + " 存入 " + 
-                               String.format("%.2f", ammount) + 
-                               "元，当前余额: " + String.format("%.2f", hsmapAccount.get("S001").getBalance()));
-        } catch (InvalidAmountException  e) {
-            System.out.println(e.getMessage());  
-        } 
+        // 选课
+        System.out.println("--- 选课 ---");
+        enrollCourse(hasmapCourse, hasmapStudent, "C001", "S001");
+        enrollCourse(hasmapCourse, hasmapStudent, "C001", "S002");
+        enrollCourse(hasmapCourse, hasmapStudent, "C001", "S003");
+        enrollCourse(hasmapCourse, hasmapStudent, "C002", "S001");
+        enrollCourse(hasmapCourse, hasmapStudent, "C002", "S001");
+    
+        // 打印所有课程
+        System.out.println("--- 课程信息 ---");
+        for(String courseId : hasmapCourse.keySet()){
 
-        ammount = 1000.0;
-        try {
-            hsmapAccount.get("C001").deposit(ammount);
-            System.out.println(hsmapAccount.get("C001").getOwner() + " 存入 " + 
-                                String.format("%.2f", ammount)
-                                + "元，当前余额: " + String.format("%.2f", hsmapAccount.get("C001").getBalance()));
-
-        } catch (InvalidAmountException e) {
-            System.out.println(e.getMessage());
+            System.out.println(hasmapCourse.get(courseId).toString());
         }
 
-        // 取款
-        System.out.println("--- 取款 ---");
-        ammount = 3000;
-        try {
-            hsmapAccount.get("S001").withdraw(ammount);
-            System.out.println(hsmapAccount.get("S001").getOwner() + " 取出 " + 
-                String.format("%.2f", ammount) + "元，当前余额: " + 
-                String.format("%.2f", hsmapAccount.get("S001").getBalance()));
-        } catch (InvalidAmountException e) {
-            System.out.println(e.getMessage());
-        } catch (InsufficientFundsException e){
-            System.out.println(e.getMessage());
+       // 学生选课情况
+        System.out.println("--- 学生选课情况 ---");
+        for(String studentId : hasmapStudent.keySet()){
+            hasmapStudent.get(studentId).printCourses();
         }
 
-        System.out.println("--- 余额不足（异常） ---");
-        ammount = 10000;
-        try {
-            hsmapAccount.get("S001").withdraw(ammount);
-            System.out.println(hsmapAccount.get("S001").getOwner() + " 取出 " + 
-                String.format("%.2f", ammount) + "元，当前余额: " + 
-                String.format("%.2f", hsmapAccount.get("S001").getBalance()));
-        } catch (InvalidAmountException e) {
-            System.out.println(e.getMessage());
-        } catch (InsufficientFundsException e){
-            System.out.println(e.getMessage());
-        }
+        // 所有信息写入文件
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("enrollment.txt"))){
+            // 选课信息
+            writer.write("--- 课程信息 ---");
+            writer.newLine();
+            for(String courseId : hasmapCourse.keySet()){
+            writer.write(hasmapCourse.get(courseId).toString());
+            writer.newLine();
+           } 
 
-        System.out.println("--- 金额不足（异常） ---");
-        ammount = -1000;
-        try {
-            hsmapAccount.get("C001").withdraw(ammount);
-            System.out.println(hsmapAccount.get("C001").getOwner() + " 取出 " + 
-                String.format("%.2f", ammount) + "元，当前余额: " + 
-                String.format("%.2f", hsmapAccount.get("C001").getBalance()));
-        } catch (InvalidAmountException e) {
-            System.out.println(e.getMessage());
-        } catch (InsufficientFundsException e){
-            System.out.println(e.getMessage());
-        }
+           // 学生信息
+            writer.write("--- 学生选课情况 ---");
+            writer.newLine();           
+           for(String studentId : hasmapStudent.keySet()){
+            writer.write(hasmapStudent.get(studentId).getCourseInfo());
+            writer.newLine();
+           }
 
-        // 计算利息
-        System.out.println("--- 计算利息 ---");
-        double interest;
-        BankAccount account = hsmapAccount.get("S001");
-        if (account instanceof SavingAccount){  
-            SavingAccount saAccount = (SavingAccount) account; // 强制类型转换
-            interest = saAccount.addInterest();
-            System.out.println(saAccount.getOwner() + " 利息收入： " + String.format("%.2f", interest)
-            + " 元，当前余额: " + String.format("%.2f", saAccount.getBalance()) + " 元");
-        }
-        
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("accounts.txt"))){
-            
-            for(String accountId : hsmapAccount.keySet()){
-                writer.write(hsmapAccount.get(accountId).toString());
-                writer.newLine();
-            }
-            System.out.println("--- 写入文件成功 ---");
+           System.out.println("--- 写入文件成功 ---");
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-     }
+    }
 }
+
