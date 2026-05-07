@@ -1,230 +1,84 @@
-// 练习3: 学生选课系统
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-// 自定义异常
-class CourseFullException extends Exception{    // 课程已满时抛出
 
-   CourseFullException(String message){
-    super(message);
-   } 
-
-}
-
-class AlreadyEnrolledException extends Exception{   // 学生已选该课时抛出
-
-    AlreadyEnrolledException(String message){
-        super(message);
-    }    
-
-}
-
-// class 课程
-class Course{
-
-    private String courseId;
-    private String courseName;
-    private int maxStudents;
-    private ArrayList<String> enrolledStudents = new ArrayList<>(); // 选课学生姓名
-
-    // 构造方法
-    Course(String courseId, String courseName, int maxStudents){
-
-        this.courseId = courseId;
-        this.courseName = courseName;
-        this.maxStudents = maxStudents;
-
-    }
-
-    // 方法
-    public String getCourseId() { return courseId; }
-    public String getCourseName(){ return courseName; }
-    public int getEnrolledCount(){ return enrolledStudents.size(); }
-    
-    // 方法： 选课，已满抛出 CourseFullException，已选抛出AlreadyEnrolledException
-    public void enroll(String studentName) throws CourseFullException, AlreadyEnrolledException{
-
-        if (getEnrolledCount() == maxStudents){
-            throw new CourseFullException("异常: " + courseName + " 课程已满! ");
-        }
-        for(int i = 0; i < enrolledStudents.size(); i++){
-            if(enrolledStudents.get(i).equals(studentName)) {
-                throw new AlreadyEnrolledException("异常: " + studentName + " 已选修 " + courseName);
-            }  
-        }     
-        enrolledStudents.add(studentName);
-    }
-
-    @Override
-    public String toString() {
-        
-        return "[" + getCourseId() + "] "  + getCourseName() + " 最大人数： " 
-            + maxStudents + " 已选： " + getEnrolledCount() + "人";
-
-    }
-
-}
-
-// class: 学生
-class Student{
-    private String studentId;
+class Employee {
     private String name;
-    private ArrayList<String> enrolledCourses = new ArrayList<>();  // 已选课程名称 
+    private String department;
+    private String email;
+    private double salary;
 
-    // 构造方法
-    Student( String studentId, String name){
-        this.studentId = studentId;
+    public Employee(String name, String department, String email, double salary){
         this.name = name;
+        this.department = department;
+        this.email = email;
+        this.salary = salary;
     }
 
-    public String getStudentId(){ return studentId; }
+    // 验证邮箱格式（必须包含@和.）
+    public boolean isValidEmail(){
+        return email.contains("@") && email.contains(".");
+    }
+
+    // 获取邮箱用户名（@之前的部分）
+    public String getEmailUsername(){
+        int atIndex = email.indexOf("@");
+        return email.substring(0, atIndex);
+    }
+
+    // 用 StringBuilder 生成员工信息报告
+    public String getReport(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("姓名：").append(name).append("\n");
+        sb.append("部门：").append(department).append("\n");
+        sb.append("邮箱：").append(email).append("\n");
+        if (!isValidEmail()){
+            sb.append("(格式有误)\n");
+        }
+    //    sb.append("\n");
+        sb.append("薪资：").append(String.format("%.1f", salary)).append("万元");
+        return sb.toString();    
+    }
+
     public String getName(){ return name;}
-
-    public void addCourse(String courseName){ enrolledCourses.add(courseName); }    // 添加已选课程
-
-    public void printCourses(){     // 打印已选课程
-        System.out.print(name + "(" + studentId + ") " + "已选课程：");
-        if (enrolledCourses.isEmpty()){
-            System.out.println("无");
-        }  else { 
-            for ( int i = 0; i < enrolledCourses.size(); i++){
-                if( i == enrolledCourses.size() -1){    // 最后一个
-                    System.out.println(enrolledCourses.get(i));
-                } else {
-                    System.out.print(enrolledCourses.get(i) + "、");
-                }
-            }
-        }
-    }
-
-    public String getCourseInfo(){ // 返回已选课程
-        StringBuilder info = new StringBuilder();
-        info.append(name + "(" + studentId + ") " + "已选课程：");
-        if(enrolledCourses.isEmpty()){
-            info.append("无");
-        } else {
-            for(int i = 0; i < enrolledCourses.size(); i++){
-                if (i == enrolledCourses.size() -1){
-                    info.append(enrolledCourses.get(i));
-                } else{
-                    info.append(enrolledCourses.get(i) + "、");
-                }
-            }
-        }
-
-        return info.toString();
-    }
-}
-
-
-
-
+    public double getSalary(){ return salary;}
+    public String getDepartment() { return department; }    
+}  
 
 public class App {
 
-    // 静态方法： 选课
-    static void enrollCourse(HashMap<String,Course> hashmapCourse,
-                             HashMap<String,Student> hasmapStudent,
-                             String courseId,
-                             String studenId)                            
-    {
-        try {
-            Course course = hashmapCourse.get(courseId);
-            Student student = hasmapStudent.get(studenId);
-            
-            if (course == null){
-                System.out.println("课程不存在");
-                return;
-            } 
-            if(student == null){
-               System.out.println("学生不存在");
-               return; 
-            }
-
-            course.enroll(student.getName());
-            student.addCourse(course.getCourseName());
-            System.out.println(student.getName() + " 成功选修 " + course.getCourseName());
-
-        } catch (CourseFullException e) {
-            System.out.println(e.getMessage());
-        }
-          catch (AlreadyEnrolledException e) {
-            System.out.println(e.getMessage());
-        }
-
-
-    }
-
     public static void main(String[] args) {
         
-        HashMap<String,Course> hasmapCourse = new HashMap<>();
-        HashMap<String,Student> hasmapStudent = new HashMap<>();
+        ArrayList< Employee > employees = new ArrayList<>();
+        employees.add(new Employee("谢晨", "IT部", "xie.chen@company.com", 65.0));
+        employees.add(new Employee("田中", "人事部", "tanaka@company.com", 52.0));
+        employees.add(new Employee("山田", "营业部", "yamada-invalid-email", 48.0));
+        employees.add(new Employee("铃木", "IT部", "suzuki@company.com", 71.0));
 
-        // 添加课程
-        hasmapCourse.put("C001", new Course("C001", "Java编程", 2));
-        hasmapCourse.put("C002", new Course("C002", "数据库基础", 3));
-        hasmapCourse.put("C003", new Course("C003", "网络安全", 2));
-
-        // 添加学生
-        hasmapStudent.put("S001", new Student("S001", "谢晨"));
-        hasmapStudent.put("S002", new Student("S002", "田中"));
-        hasmapStudent.put("S003", new Student("S003", "山田"));
-        hasmapStudent.put("S004", new Student("S004", "铃木"));
-
-        // 打印所有课程
-        System.out.println("--- 所有课程 ---");
-        for(String courseId : hasmapCourse.keySet()){
-
-            System.out.println(hasmapCourse.get(courseId).toString());
+        // 打印所有员工报告
+        System.out.println("=== 员工信息 ===");
+        for (Employee e : employees){
+            System.out.println(e.getReport());
+            System.out.println("---");
         }
 
-        // 选课
-        System.out.println("--- 选课 ---");
-        enrollCourse(hasmapCourse, hasmapStudent, "C001", "S001");
-        enrollCourse(hasmapCourse, hasmapStudent, "C001", "S002");
-        enrollCourse(hasmapCourse, hasmapStudent, "C001", "S003");
-        enrollCourse(hasmapCourse, hasmapStudent, "C002", "S001");
-        enrollCourse(hasmapCourse, hasmapStudent, "C002", "S001");
-    
-        // 打印所有课程
-        System.out.println("--- 课程信息 ---");
-        for(String courseId : hasmapCourse.keySet()){
-
-            System.out.println(hasmapCourse.get(courseId).toString());
+        // 找出薪资最高的员工（擂台算法复习）
+        Employee highest = employees.get(0);
+        for (Employee e : employees){
+            if (highest.getSalary() < e.getSalary()){
+                highest = e;
+            }
         }
+        System.out.println("薪资最高：" + highest.getName()
+                + "（" + String.format("%.1f", highest.getSalary()) + "万元）");
 
-       // 学生选课情况
-        System.out.println("--- 学生选课情况 ---");
-        for(String studentId : hasmapStudent.keySet()){
-            hasmapStudent.get(studentId).printCourses();
+        // 统计 IT部 的员工数量
+        int itCount = 0;
+        for( Employee e : employees){
+            if(e.getDepartment().equals("IT部")){
+                itCount ++;
+            }
         }
+        System.out.println("IT部人数：" + itCount);
 
-        // 所有信息写入文件
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("enrollment.txt"))){
-            // 选课信息
-            writer.write("--- 课程信息 ---");
-            writer.newLine();
-            for(String courseId : hasmapCourse.keySet()){
-            writer.write(hasmapCourse.get(courseId).toString());
-            writer.newLine();
-           } 
-
-           // 学生信息
-            writer.write("--- 学生选课情况 ---");
-            writer.newLine();           
-           for(String studentId : hasmapStudent.keySet()){
-            writer.write(hasmapStudent.get(studentId).getCourseInfo());
-            writer.newLine();
-           }
-
-           System.out.println("--- 写入文件成功 ---");
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }
-
+    
