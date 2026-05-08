@@ -1,84 +1,74 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-class Employee {
+class Product {
     private String name;
-    private String department;
-    private String email;
-    private double salary;
+    private String category;
+    private double price;
+    private int stock;
 
-    public Employee(String name, String department, String email, double salary){
+    // 构造方法
+    public Product (String name, String category, double price, int stock){
         this.name = name;
-        this.department = department;
-        this.email = email;
-        this.salary = salary;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
     }
 
-    // 验证邮箱格式（必须包含@和.）
-    public boolean isValidEmail(){
-        return email.contains("@") && email.contains(".");
-    }
+    public String getName(){ return name; }
+    public String getCategory(){ return category; }
+    public double getPrice (){ return price; }
+    public int getStock(){ return stock; }
 
-    // 获取邮箱用户名（@之前的部分）
-    public String getEmailUsername(){
-        int atIndex = email.indexOf("@");
-        return email.substring(0, atIndex);
+    public void printInfo(){
+        System.out.println(String.format("%-10s %-6s %6.1f 库存：%d" ,name, category,price,stock));
     }
-
-    // 用 StringBuilder 生成员工信息报告
-    public String getReport(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("姓名：").append(name).append("\n");
-        sb.append("部门：").append(department).append("\n");
-        sb.append("邮箱：").append(email).append("\n");
-        if (!isValidEmail()){
-            sb.append("(格式有误)\n");
-        }
-    //    sb.append("\n");
-        sb.append("薪资：").append(String.format("%.1f", salary)).append("万元");
-        return sb.toString();    
-    }
-
-    public String getName(){ return name;}
-    public double getSalary(){ return salary;}
-    public String getDepartment() { return department; }    
-}  
+}   // end of Product
 
 public class App {
 
     public static void main(String[] args) {
+        ArrayList<Product> arryaProducts = new ArrayList<>();
+        HashMap<String, Integer> count = new HashMap<>();
+
+        arryaProducts.add(new Product("笔记本电脑", "电器", 8500.0, 10));
+        arryaProducts.add(new Product("机械键盘", "电器", 650.0, 25));
+        arryaProducts.add(new Product("Java教材", "书籍", 89.0, 50));
+        arryaProducts.add(new Product("显示器", "电器", 2100.0, 8));
+        arryaProducts.add(new Product("算法导论", "书籍", 128.0, 30));
+        arryaProducts.add(new Product("鼠标", "电器", 320.0, 40));
+
+        // 打印所有商品
+        System.out.println("--- 所有商品 ---");
+        for(Product product : arryaProducts){
+            product.printInfo();
+        }
+
+        // 升序排序
+        Collections.sort(arryaProducts,(a,b) -> Double.compare(a.getPrice(), b.getPrice()));
+        System.out.println("\n=== 按价格排序（低→高）===");
+        for(Product product : arryaProducts){
+            product.printInfo();
+        }  
         
-        ArrayList< Employee > employees = new ArrayList<>();
-        employees.add(new Employee("谢晨", "IT部", "xie.chen@company.com", 65.0));
-        employees.add(new Employee("田中", "人事部", "tanaka@company.com", 52.0));
-        employees.add(new Employee("山田", "营业部", "yamada-invalid-email", 48.0));
-        employees.add(new Employee("铃木", "IT部", "suzuki@company.com", 71.0));
+        // 3. 用 Math 计算最高价和最低价
+        double maxPrice = arryaProducts.getLast().getPrice();
+        double minPrice = arryaProducts.getFirst().getPrice();
+        System.out.println("\n最高价：" + maxPrice + "元");
+        System.out.println("最低价：" + minPrice + "元");
+        System.out.println("差价：" + Math.abs(maxPrice - minPrice) + "元" );
 
-        // 打印所有员工报告
-        System.out.println("=== 员工信息 ===");
-        for (Employee e : employees){
-            System.out.println(e.getReport());
-            System.out.println("---");
+        // 4. 用 HashMap 统计各分类的商品数量，用 Map.Entry 遍历输出
+        for (Product p : arryaProducts){
+            String  cat = p.getCategory();
+            count.put(cat, count.getOrDefault(cat, 0) + 1);
         }
-
-        // 找出薪资最高的员工（擂台算法复习）
-        Employee highest = employees.get(0);
-        for (Employee e : employees){
-            if (highest.getSalary() < e.getSalary()){
-                highest = e;
-            }
+        
+        System.out.println("\n--- 各分类商品数量 ---");
+        for (Map.Entry<String, Integer> entry : count.entrySet()){
+            System.out.println(entry.getKey() + ": " +  entry.getValue());
         }
-        System.out.println("薪资最高：" + highest.getName()
-                + "（" + String.format("%.1f", highest.getSalary()) + "万元）");
-
-        // 统计 IT部 的员工数量
-        int itCount = 0;
-        for( Employee e : employees){
-            if(e.getDepartment().equals("IT部")){
-                itCount ++;
-            }
-        }
-        System.out.println("IT部人数：" + itCount);
-
     }
 }
-    
