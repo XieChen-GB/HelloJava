@@ -1,74 +1,155 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
-class Product {
-    private String name;
-    private String category;
-    private double price;
-    private int stock;
-
-    // 构造方法
-    public Product (String name, String category, double price, int stock){
-        this.name = name;
-        this.category = category;
-        this.price = price;
-        this.stock = stock;
+// 继承 Exception，当优先级不是 1/2/3 时抛出。
+class InvalidPriorityException extends Exception{
+    InvalidPriorityException(String message){
+        super(message);
     }
+}   // end InvalidPriorityException
+class Task {
+    private String title;    // 任务标题
+    private int priority;   // 优先级，只能是1，2，3
+    private boolean completed;  // 是否完成，默认fales
 
-    public String getName(){ return name; }
-    public String getCategory(){ return category; }
-    public double getPrice (){ return price; }
-    public int getStock(){ return stock; }
-
+    // 构造方法：接收 title 和 priority，completed 默认 false
+    Task (String title, int priority) throws InvalidPriorityException{
+        if(priority < 1 || priority > 3){
+            throw new InvalidPriorityException("优先级设置错误");
+        }
+        this.priority = priority;
+        this.title = title;
+        this.completed = false;
+    }
+    // 标记完成状态
+    public void setCompleted (boolean status){
+        completed = status;
+    }
+    // 设置优先级，不是 1/2/3 时抛出自定义异常
+    public void setPriority(int p) throws InvalidPriorityException{
+        if (p < 1 || p > 3){
+            throw new InvalidPriorityException("优先级设置错误");
+        }
+        this.priority = p;
+    }
+    // getter
+    public String getTitle(){ return title; }
+    public int getPriority() { return priority; }
+    public boolean isCompleted(){ return completed; }
+    // 打印任务信息
     public void printInfo(){
-        System.out.println(String.format("%-10s %-6s %6.1f 库存：%d" ,name, category,price,stock));
+        System.out.printf("%-10s 优先级：%d 是否完成：%b%n", title, priority, completed);
     }
-}   // end of Product
+} // end Task
+
+class TaskManager{
+    private ArrayList<Task> tasks;
+    // 构造方法 
+    TaskManager(){
+        tasks = new ArrayList<>();
+    }
+    // 添加任务
+    public void addTask(Task task){
+        tasks.add(task);
+    }
+    // 打印所有任务
+    public void printAll(){
+        for( Task t : tasks){
+            t.printInfo();
+        }
+    }
+    // 只打印指定优先级的任务
+    public void printByPriority(int priority){
+        for ( Task t : tasks){
+            if(t.getPriority() == priority){
+                t.printInfo();
+            }
+        }
+    }
+    // 把所有任务写入文件，用 try-with-resources，写入时Task的3个变量值用","分割
+    public void saveToFile(String filename){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for ( Task t : tasks){
+                writer.write(String.format("%s,%d,%b%n", t.getTitle(), t.getPriority(), t.isCompleted()));
+            }
+            System.out.println(filename + "写入成功");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    // 文件读取任务并打印，用 try-with-resources，读取时用","切割成数组
+    public void loadFromFile(String filename){
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;            
+            while((line=reader.readLine()) != null){
+                String[] parts = line.split(",");
+                String title = parts[0];
+                int priority = Integer.parseInt(parts[1]); // 将字符串类型转换成整型
+                boolean completed = Boolean.parseBoolean(parts[2]); // 将字符串类型转换成boolen
+                System.out.printf("%-10s 优先级：%d 是否完成：%b%n", title, priority, completed);
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    // 标记任务为完成
+    public void markCompleted(String title){
+        for (Task t: tasks){
+            if(t.getTitle().equals(title)){
+                t.setCompleted(true);
+                break;
+            }
+        }
+    }
+}   // end TaskManager
 
 public class App {
-
     public static void main(String[] args) {
-        ArrayList<Product> arrayProducts = new ArrayList<>();
-        HashMap<String, Integer> count = new HashMap<>();
-
-        arrayProducts.add(new Product("笔记本电脑", "电器", 8500.0, 10));
-        arrayProducts.add(new Product("机械键盘", "电器", 650.0, 25));
-        arrayProducts.add(new Product("Java教材", "书籍", 89.0, 50));
-        arrayProducts.add(new Product("显示器", "电器", 2100.0, 8));
-        arrayProducts.add(new Product("算法导论", "书籍", 128.0, 30));
-        arrayProducts.add(new Product("鼠标", "电器", 320.0, 40));
-
-        // 打印所有商品
-        System.out.println("--- 所有商品 ---");
-        for(Product product : arrayProducts){
-            product.printInfo();
+        TaskManager tm = new TaskManager();
+        try {
+            tm.addTask(new Task("完成练习6", 1));
+            tm.addTask(new Task("复习ArrayList", 2));
+            tm.addTask(new Task("学习Spring Boot", 1));
+            tm.addTask(new Task("整理学习笔记", 3));
+            tm.addTask(new Task("提交GitHub", 2));
+            tm.addTask(new Task("复习异常处理", 1));
+            tm.addTask(new Task("配置开发环境", 3));
+            tm.addTask(new Task("阅读Java文档", 2));
+        } catch (InvalidPriorityException e) {
+            System.out.println(e.getMessage());
         }
 
-        // 升序排序
-        Collections.sort(arrayProducts,(a,b) -> Double.compare(a.getPrice(), b.getPrice()));
-        System.out.println("\n=== 按价格排序（低→高）===");
-        for(Product product : arrayProducts){
-            product.printInfo();
-        }  
-        
-        // 3. 用 Math 计算最高价和最低价
-        double maxPrice = arrayProducts.getLast().getPrice();
-        double minPrice = arrayProducts.getFirst().getPrice();
-        System.out.println("\n最高价：" + maxPrice + "元");
-        System.out.println("最低价：" + minPrice + "元");
-        System.out.println("差价：" + Math.abs(maxPrice - minPrice) + "元" );
+        // 打印搜有任务
+        System.out.println("--- 打印所有任务 ---");
+        tm.printAll();
 
-        // 4. 用 HashMap 统计各分类的商品数量，用 Map.Entry 遍历输出
-        for (Product p : arrayProducts){
-            String  cat = p.getCategory();
-            count.put(cat, count.getOrDefault(cat, 0) + 1);
+        // 标记任务完成
+        System.out.println("--- 把\"完成练习6\"标记为已完成 ---");
+        tm.markCompleted("完成练习6");
+
+        // 打印优先级为1的任务
+        System.out.println("--- 打印优先级为1的任务 ---");
+        tm.printByPriority(1);
+
+        // 测试非法优先级（传入5），捕获异常并打印提示
+        System.out.println("测试非法优先级（传入5）");
+        try {
+            tm.addTask(new Task("文件IO练习", 5));
+        } catch (InvalidPriorityException e) {
+            System.out.println(e.getMessage());
         }
         
-        System.out.println("\n--- 各分类商品数量 ---");
-        for (Map.Entry<String, Integer> entry : count.entrySet()){
-            System.out.println(entry.getKey() + ": " +  entry.getValue());
-        }
-    }
-}
+        // 保存文件 tasks.txt
+        System.out.println("------ 保存文件 ------");
+        System.out.println("保存文件 tasks.txt");
+        tm.saveToFile("tasks.txt");
+
+        // 从文件读取并打印
+        System.out.println("------ 从文件读取并打印 ------");
+        tm.loadFromFile("tasks.txt");
+    } // end main
+}   // end App

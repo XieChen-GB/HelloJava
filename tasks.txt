@@ -1,0 +1,8 @@
+完成练习6,1,true
+复习ArrayList,2,false
+学习Spring Boot,1,false
+整理学习笔记,3,false
+提交GitHub,2,false
+复习异常处理,1,false
+配置开发环境,3,false
+阅读Java文档,2,false
