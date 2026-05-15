@@ -1,113 +1,122 @@
-// 练习7：常用语法和工具方法
-// 本次内容： 三元运算符、static 关键字、Math.random()、isEmpty() / isBlank()
-// 随机点名系统
+// 综合练习8 书单管理系统
 
 import java.util.ArrayList;
-class Student{
-    private String name;
-    private int score;
-    private boolean present; // 是否出勤
+import java.util.Collections;
+
+class Book{
+    private String title;
+    private String author;
+    private boolean read = false;
 
     // 构造方法
-    Student(String name, int score){
-        this.name = name;
-        this.score = score;
-        present = false;
+    Book(String title, String author){
+        this.title = title;
+        this.author = author;
     }
 
-    public void setPresent (boolean stauts){
-        present = stauts;
+    public void setRead(boolean status){
+        read = status;
     }
 
-    // getter
-    public String getName(){ return name; }
-    public int getScore(){ return score; }
-    public boolean getPresent(){ return present;}
+    public String getTitle(){ return title; }
+    public String getAuthor(){ return author; }
+    public boolean getRead(){ return read; }
 
-    // 打印学生信息
+    public boolean isRead(){
+        return read ;
+    }
     public void printInfo(){
-        System.out.printf("姓名: %-10s , 成绩: %5d , 出勤状况: %2s%n",
-         name, score, present ? "出勤" : "缺勤");
+        System.out.println(getTitle() + ", " + getAuthor() + ", " + (read ? "已读" : "未读"));
     }
 }
 
-class Classroom {
-    private ArrayList<Student> students;
-    static int totalClasses = 0; //  上课总次数
-
+class BookList{
+    private ArrayList<Book> books;
+    
     // 构造方法
-    Classroom (){
-        students = new ArrayList<>();
+    public BookList(){
+        books = new ArrayList<>();
     }
 
-    // 添加前用 isBlank() 验证姓名不能为空，为空时打印提示
-    public void addStudent(Student newStudent){
-        if(newStudent.getName().isBlank()){         // isBlank的用法 “”， “”  “”
-            System.out.println("姓名不能为空");
-            return;
+    public void addBook(Book b){
+        books.add(b);
+    }
+
+    public Book getBook(String bookTitle){
+        for (Book b : books){
+            if (b.getTitle().equals(bookTitle)){
+                return b;
+            } 
         }
-        students.add(newStudent);
+        return null;
     }
 
-    // 随机点名: 用 Math.random() 随机选一个学生，打印"被点到：xxx"
-    public void randomPick(){
-        int numberOfStudents = students.size();
-        int pickedNumber = (int)(Math.random() * numberOfStudents);
-        System.out.println("被点到: " + students.get(pickedNumber).getName());
-    }
-
-    // 上课出席: 把所有学生的 present 设为 true，同时 totalClasses++
-    public void takeAttendance(){
-        for( Student s : students){
-            s.setPresent(true);
-        }
-        totalClasses++;
-    }
-
-    // 打印所有学生信息
+    // 打印所有书
     public void printAll(){
-        for ( Student s : students){
-            s.printInfo();
+        for ( Book b : books){
+            b.printInfo();
         }
     }
 
-    // 打印上课总次数
-    static void printTotalClasses(){
-        System.out.println("上课总次数: " + totalClasses);
-    }
+    // 把所有书名拼成一行打印
+    public void printTitles(){
+        ArrayList<String> titles = new ArrayList<>();
+        for(Book b : books){
+            titles.add(b.getTitle());
+        }
+
+        String s = String.join(",", titles);
+        System.out.println(s);
+   }
+
+   // 反转列表
+   public void reverseOrder(){
+    Collections.reverse(books);
+   }
+
+   // 随机打乱
+   public void shuffle(){
+    Collections.shuffle(books);
+   }
+
+   // 删除所有已读的书
+   public void removeRead(){
+    books.removeIf(book -> book.isRead());
+   }
 }
 
 public class App {
 
     public static void main(String[] args) {
+        BookList books = new BookList();
+        books.addBook(new Book("三体", "刘慈欣"));
+        books.addBook(new Book("百年孤独", "加西亚·马尔克斯"));
+        books.addBook(new Book("活着", "余华"));
+        books.addBook(new Book("挪威的森林", "村上春树"));
+        books.addBook(new Book("红楼梦", "曹雪芹"));
+        books.addBook(new Book("小王子", "圣埃克苏佩里"));
+
+        // 打印所有书
+        books.printAll();
         
-        // 添加5名学生
-        Classroom c1 = new Classroom();
-        c1.addStudent(new Student("张伟", 85));
-        c1.addStudent(new Student("李娜", 92));
-        c1.addStudent(new Student("王芳", 78));
-        c1.addStudent(new Student("赵明", 65));
-        c1.addStudent(new Student("陈静", 88));
-        
-        // 验证 isBlank
-        c1.addStudent(new Student("", 70));
+        // 打印所有书名（一行显示）
+        books.printTitles();
 
-        // 打印所有学生
-        c1.printAll();
+        // 把前两本标记为已读
+        books.getBook("挪威的森林").setRead(true);
+        books.getBook("三体").setRead(true);
 
-        // 随机点名3次
-        for(int i =1;i<4;i++){
-            System.out.println("第" + i + "次点名");
-            c1.randomPick();
-        }
+        // 删除已读的书，再打印剩余书单
+        books.removeRead();
+        books.printTitles();
 
-        // 标记出勤
-        c1.takeAttendance();
+        // 打乱顺序后打印
+        books.shuffle();
+        books.printTitles();
 
-        // 再次打印所有学生
-        c1.printAll();    
-        
-        // 打印上课总次数
-        Classroom.printTotalClasses();
+        // 反转后打印
+        books.reverseOrder();
+        books.printTitles();
     }
+
 }
